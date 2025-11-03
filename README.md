@@ -111,8 +111,19 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Inicializar mapa
-    const map = L.map('map').setView([41.6528, -4.7245], 15);
+    // Inicializar mapa y desactivar interacción
+    const map = L.map('map', {
+      center: [41.6528, -4.7245],
+      zoom: 15,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      keyboard: false,
+      tap: false,
+      touchZoom: false
+    });
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
       maxZoom: 19
@@ -150,11 +161,11 @@
       }
     ];
 
-    // Crear marcadores con tooltips e interacción
+    // Crear marcadores
     monumentos.forEach(monumento => {
       const marker = L.marker(monumento.coords).addTo(map);
 
-      // Tooltip (imagen + resumen)
+      // Tooltip
       marker.bindTooltip(
         `<div class='tooltip-custom'>
           <img src='${monumento.imagen}' alt='${monumento.nombre}'>
@@ -163,7 +174,7 @@
         { direction: "top", offset: [0, -10], opacity: 0.95 }
       );
 
-      // Evento al hacer clic -> mostrar panel completo
+      // Click -> mostrar panel a pantalla completa
       marker.on("click", () => {
         document.getElementById("info-imagen").src = monumento.imagen;
         document.getElementById("info-titulo").textContent = monumento.nombre;
@@ -172,10 +183,11 @@
       });
     });
 
-    // Botón de cerrar
+    // Botón cerrar
     document.getElementById("close-btn").addEventListener("click", () => {
       document.getElementById("info-panel").style.display = "none";
     });
+
   </script>
 </body>
 </html>
