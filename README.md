@@ -10,7 +10,6 @@
       font-family: "Segoe UI", sans-serif;
       background: #f4f6f9;
     }
-
     header {
       background: #283593;
       color: white;
@@ -21,24 +20,19 @@
       z-index: 1000;
       position: relative;
     }
-
     #map {
       height: 90vh;
       width: 100%;
     }
-
     .tooltip-custom {
       text-align: center;
     }
-
     .tooltip-custom img {
       width: 120px;
       height: 80px;
       border-radius: 8px;
       margin-bottom: 4px;
     }
-
-    /* Panel de información a pantalla completa */
     #info-panel {
       position: fixed;
       top: 0;
@@ -56,7 +50,6 @@
       padding: 2rem;
       overflow-y: auto;
     }
-
     #info-panel img {
       width: 60%;
       max-width: 600px;
@@ -64,19 +57,16 @@
       margin-bottom: 1.5rem;
       box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
     }
-
     #info-panel h2 {
       font-size: 2rem;
       margin-bottom: 1rem;
       color: #ffca28;
     }
-
     #info-panel p {
       font-size: 1.1rem;
       line-height: 1.6;
       max-width: 800px;
     }
-
     #close-btn {
       position: absolute;
       top: 20px;
@@ -90,18 +80,15 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-
     #close-btn:hover {
       background: #ffd54f;
     }
-
   </style>
 </head>
 <body>
   <header>🗺️ Monumentos emblemáticos de Valladolid</header>
   <div id="map"></div>
 
-  <!-- Panel de información completa -->
   <div id="info-panel">
     <button id="close-btn">Cerrar</button>
     <img id="info-imagen" src="" alt="">
@@ -111,9 +98,8 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Inicializar mapa con mejor centro y zoom
     const map = L.map('map', {
-      center: [41.6545, -4.7235],
+      center: [41.6540, -4.7235],
       zoom: 16,
       dragging: false,
       scrollWheelZoom: false,
@@ -129,52 +115,48 @@
       maxZoom: 19
     }).addTo(map);
 
-    // Monumentos con ubicaciones refinadas
     const monumentos = [
       {
         nombre: "Iglesia de San Pablo",
-        coords: [41.657028, -4.723890],
+        coords: [41.656916, -4.724647],  // según recurso externo :contentReference[oaicite:0]{index=0}
         imagen: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Iglesia_de_San_Pablo_de_Valladolid_2019.jpg",
-        breve: "Obra maestra del gótico isabelino con una fachada impresionante del siglo XV.",
-        info: "Construida a finales del siglo XV, la Iglesia de San Pablo es un ejemplo magistral del gótico isabelino. Su fachada, decorada con relieves de gran detalle, fue testigo de acontecimientos históricos como la coronación del rey Felipe II."
+        breve: "Obra maestra del gótico isabelino con una fachada impresionante del siglo XV.",
+        info: "Construida a finales del siglo XV, la Iglesia de San Pablo es un ejemplo magistral del gótico isabelino. Su fachada, decorada con relieves de gran detalle, fue testigo de acontecimientos históricos como la coronación del rey Felipe II."
       },
       {
         nombre: "Museo Nacional de Escultura (Colegio de San Gregorio)",
-        coords: [41.656850, -4.724120],
+        coords: [41.656900, -4.723610],  // según Wikipedia :contentReference[oaicite:1]{index=1}
         imagen: "https://upload.wikimedia.org/wikipedia/commons/7/79/Colegio_de_San_Gregorio%2C_Valladolid%2C_Espa%C3%B1a%2C_2015-12-30%2C_DD_49.JPG",
         breve: "Antiguo Colegio de San Gregorio, joya del arte plateresco y sede del Museo Nacional de Escultura.",
         info: "El conjunto monumental del Colegio de San Gregorio, conocido por sus 'cadenas', alberga el Museo Nacional de Escultura. Su fachada plateresca es una de las más representativas del arte renacentista español, con una riqueza decorativa excepcional."
       },
       {
         nombre: "Catedral de Valladolid",
-        coords: [41.652820, -4.723360],
+        coords: [41.652678, -4.723415],  // según Wikipedia :contentReference[oaicite:2]{index=2}
         imagen: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Catedral_de_Valladolid_2018.jpg",
-        breve: "Diseñada por Juan de Herrera, combina los estilos herreriano y barroco. Inacabada pero monumental.",
+        breve: "Diseñada por Juan de Herrera, combina los estilos herreriano y barroco. Inacabada pero monumental.",
         info: "La Catedral de Nuestra Señora de la Asunción comenzó a construirse en el siglo XVI según los planos de Juan de Herrera. Aunque nunca se terminó, su arquitectura imponente refleja el poder y la historia religiosa de Valladolid."
       },
       {
-        nombre: "Estatua de Miguel de Cervantes",
-        coords: [41.652950, -4.722550],
+        nombre: "Estatua de Miguel de Cervantes",
+        coords: [41.652850, -4.722200],  // aproximación mejor localizada
         imagen: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Estatua_Miguel_de_Cervantes_Valladolid_2018.jpg",
-        breve: "Escultura en honor al célebre autor de Don Quijote, situada en la plaza que lleva su nombre.",
-        info: "Situada en la Plaza de la Universidad, esta estatua conmemora la estancia del escritor en Valladolid, donde publicó la primera parte de 'Don Quijote de la Mancha' en 1605. Es uno de los puntos más fotografiados del centro histórico."
+        breve: "Escultura en honor al célebre autor de Don Quijote, situada en la Plaza de la Universidad.",
+        info: "Situada en la Plaza de la Universidad, esta estatua conmemora la estancia del escritor en Valladolid. Es un punto muy visitado del centro histórico."
       }
     ];
 
-    // Crear marcadores
     monumentos.forEach(monumento => {
       const marker = L.marker(monumento.coords).addTo(map);
 
-      // Tooltip
       marker.bindTooltip(
-        `<div class='tooltip-custom'>
+        `<div class='tooltip‑custom'>
           <img src='${monumento.imagen}' alt='${monumento.nombre}'>
           <div><b>${monumento.nombre}</b><br>${monumento.breve}</div>
         </div>`,
         { direction: "top", offset: [0, -10], opacity: 0.95 }
       );
 
-      // Click -> mostrar panel a pantalla completa
       marker.on("click", () => {
         document.getElementById("info-imagen").src = monumento.imagen;
         document.getElementById("info-titulo").textContent = monumento.nombre;
@@ -183,7 +165,6 @@
       });
     });
 
-    // Botón cerrar
     document.getElementById("close-btn").addEventListener("click", () => {
       document.getElementById("info-panel").style.display = "none";
     });
