@@ -1,92 +1,96 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device‑width, initial‑scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monumentos de Valladolid</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <style>
     body {
       margin: 0;
-      font‑family: "Segoe UI", sans‑serif;
-      background: #f4f6f9;
+      font-family: "Lato", "Segoe UI", sans‑serif;
+      background: #fafafa;
+      color: #333;
     }
     header {
-      background: #283593;
+      background: #00695c;
       color: white;
-      padding: 1rem;
-      text‑align: center;
-      font‑size: 1.5rem;
-      box‑shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z‑index: 1000;
-      position: relative;
+      padding: 1.2rem;
+      text-align: center;
+      font-size: 1.8rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     }
     #map {
-      height: 90vh;
+      height: 85vh;
       width: 100%;
+      border-top: 4px solid #004d40;
     }
-    .tooltip‑custom {
-      text‑align: center;
+    .tooltip-custom {
+      text-align: center;
+      font-size: 0.9rem;
+      line-height: 1.2;
     }
-    .tooltip‑custom img {
-      width: 120px;
-      height: 80px;
-      border‑radius: 8px;
-      margin‑bottom: 4px;
+    .tooltip-custom img {
+      width: 100px;
+      height: 70px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      object-fit: cover;
     }
+    /* Panel de información a pantalla completa */
     #info-panel {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(10,10,30,0.9);
-      color: white;
+      background: rgba(0, 50, 50, 0.9);
+      color: #fff;
       display: none;
-      flex‑direction: column;
-      align‑items: center;
-      justify‑content: center;
-      text‑align: center;
-      z‑index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 2000;
       padding: 2rem;
-      overflow‑y: auto;
+      overflow-y: auto;
     }
     #info-panel img {
-      width: 60%;
-      max‑width: 600px;
-      border‑radius: 15px;
-      margin‑bottom: 1.5rem;
-      box‑shadow: 0 0 15px rgba(255,255,255,0.3);
+      width: 70%;
+      max-width: 650px;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
     }
     #info-panel h2 {
-      font‑size: 2rem;
-      margin‑bottom: 1rem;
-      color: #ffca28;
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      color: #ffcc80;
     }
     #info-panel p {
-      font‑size: 1.1rem;
-      line‑height: 1.6;
-      max‑width: 800px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      max-width: 850px;
     }
     #close-btn {
       position: absolute;
-      top: 20px;
-      right: 30px;
-      background: #ffca28;
-      color: #212121;
+      top: 25px;
+      right: 35px;
+      background: #ffcc80;
+      color: #00332d;
       border: none;
-      font‑size: 1rem;
-      padding: 10px 20px;
-      border‑radius: 8px;
+      font-size: 1.1rem;
+      padding: 12px 25px;
+      border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s;
     }
     #close-btn:hover {
-      background: #ffd54f;
+      background: #ffd699;
     }
   </style>
 </head>
 <body>
-  <header>🗺️ Monumentos emblemáticos de Valladolid</header>
+  <header>🗺️ Monumentos emblemáticos en Valladolid</header>
   <div id="map"></div>
 
   <div id="info-panel">
@@ -98,17 +102,16 @@
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    // Ajuste del centro y zoom para ver bien todo
     const map = L.map('map', {
-      center: [41.6540, -4.7240],  // centro adecuado para abarcar los puntos
+      center: [41.6540, -4.7240],
       zoom: 15,
-      dragging: false,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      boxZoom: false,
-      keyboard: false,
-      tap: false,
-      touchZoom: false
+      dragging: true,
+      scrollWheelZoom: true,
+      doubleClickZoom: true,
+      boxZoom: true,
+      keyboard: true,
+      tap: true,
+      touchZoom: true
     });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -119,49 +122,49 @@
     const monumentos = [
       {
         nombre: "Iglesia de San Pablo",
-        coords: [41.656916, -4.724647],  // según fuente Plaza de San Pablo ~41.65691°, -4.72539° :contentReference[oaicite:0]{index=0}
+        coords: [41.657000, -4.724500],  // fuente Wikipedia: 41°39′25″N 4°43′28″O ≈ 41.657, -4.7245 :contentReference[oaicite:0]{index=0}
         imagen: "https://upload.wikimedia.org/wikipedia/commons/2/2a/Iglesia_de_San_Pablo_de_Valladolid_2019.jpg",
-        breve: "Obra maestra del gótico isabelino con una fachada impresionante del siglo XV.",
-        info: "Construida a finales del siglo XV, la Iglesia de San Pablo es un ejemplo magistral del gótico isabelino. Su fachada, decorada con relieves de gran detalle, fue testigo de acontecimientos históricos como la coronación del rey Felipe II."
+        breve: "Obra maestra del gótico isabelino con magnífica fachada plateresca.",
+        info: "Construida a finales del siglo XV, la Iglesia de San Pablo representa uno de los ejemplos más destacados del gótico isabelino en Castilla y León. Fue lugar de bautizo de reyes y su exterior es una obra de arte decorativa."
       },
       {
         nombre: "Museo Nacional de Escultura (Colegio de San Gregorio)",
-        coords: [41.657118, -4.723707],  // según coordenadas del museo ~41.65712°, -4.72371° :contentReference[oaicite:1]{index=1}
+        coords: [41.657118, -4.723707],  // aproximado: según fuente 41.6571178, -4.7237065 :contentReference[oaicite:1]{index=1}
         imagen: "https://upload.wikimedia.org/wikipedia/commons/7/79/Colegio_de_San_Gregorio%2C_Valladolid%2C_Espa%C3%B1a%2C_2015-12-30%2C_DD_49.JPG",
-        breve: "Antiguo Colegio de San Gregorio, joya del arte plateresco y sede del Museo Nacional de Escultura.",
-        info: "El conjunto monumental del Colegio de San Gregorio, conocido por sus 'cadenas', alberga el Museo Nacional de Escultura. Su fachada plateresca es una de las más representativas del arte renacentista español, con una riqueza decorativa excepcional."
+        breve: "Joyas del arte plateresco y sede del Museo Nacional de Escultura.",
+        info: "El antiguo Colegio de San Gregorio, hoy sede del Museo Nacional de Escultura, es un edificio emblemático del Renacimiento español. Su fachada y patios son tan interesantes como las colecciones que alberga."
       },
       {
         nombre: "Catedral de Valladolid",
-        coords: [41.652222, -4.723611],  // según fuente ~41°39′8″N => 41.6522°, -4.7236° :contentReference[oaicite:2]{index=2}
+        coords: [41.652222, -4.723611],  // estimación aproximada, revisable
         imagen: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Catedral_de_Valladolid_2018.jpg",
-        breve: "Diseñada por Juan de Herrera, combina los estilos herreriano y barroco. Inacabada pero monumental.",
-        info: "La Catedral de Nuestra Señora de la Asunción comenzó a construirse en el siglo XVI según los planos de Juan de Herrera. Aunque nunca se terminó, su arquitectura imponente refleja el poder y la historia religiosa de Valladolid."
+        breve: "Proyecto de Juan de Herrera; inacabada pero imponente.",
+        info: "La Catedral de Nuestra Señora de la Asunción, iniciada en el siglo XVI, es un símbolo de la ciudad. Aunque nunca se llegó a completar, su presencia domina el horizonte del centro histórico."
       },
       {
         nombre: "Estatua de Miguel de Cervantes",
-        coords: [41.655300, -4.727500],  // ajuste aproximado para situar la estatua en Plaza de Cervantes
+        coords: [41.655300, -4.727500],  // aproximación para la plaza de Cervantes
         imagen: "https://upload.wikimedia.org/wikipedia/commons/e/e3/Estatua_Miguel_de_Cervantes_Valladolid_2018.jpg",
-        breve: "Escultura en honor al célebre autor de Don Quijote, situada en la plaza que lleva su nombre.",
-        info: "Situada en la Plaza de Cervantes, esta estatua conmemora la estancia del escritor en Valladolid, donde publicó la primera parte de 'Don Quijote de la Mancha' en 1605. Es uno de los puntos más fotografiados del centro histórico."
+        breve: "Monumento al autor de ‘Don Quijote’ en plena plaza de la Universidad.",
+        info: "Esta estatua honra a Miguel de Cervantes y se encuentra en la Plaza de la Universidad de Valladolid, lugar de gran tránsito y valor histórico en la ciudad."
       }
     ];
 
-    monumentos.forEach(monumento => {
-      const marker = L.marker(monumento.coords).addTo(map);
+    monumentos.forEach(mon => {
+      const marker = L.marker(mon.coords).addTo(map);
 
       marker.bindTooltip(
-        `<div class='tooltip‑custom'>
-          <img src='${monumento.imagen}' alt='${monumento.nombre}'>
-          <div><b>${monumento.nombre}</b><br>${monumento.breve}</div>
-        </div>`,
-        { direction: "top", offset: [0, -10], opacity: 0.95 }
+        `<div class="tooltip-custom">
+           <img src="${mon.imagen}" alt="${mon.nombre}">
+           <div><strong>${mon.nombre}</strong><br>${mon.breve}</div>
+         </div>`,
+        { direction: "top", offset: [0, -12], opacity: 0.9 }
       );
 
       marker.on("click", () => {
-        document.getElementById("info-imagen").src = monumento.imagen;
-        document.getElementById("info-titulo").textContent = monumento.nombre;
-        document.getElementById("info-texto").textContent = monumento.info;
+        document.getElementById("info-imagen").src = mon.imagen;
+        document.getElementById("info-titulo").textContent = mon.nombre;
+        document.getElementById("info-texto").textContent = mon.info;
         document.getElementById("info-panel").style.display = "flex";
       });
     });
