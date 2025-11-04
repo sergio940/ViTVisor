@@ -122,6 +122,7 @@
     const generationSelect = document.getElementById('generation');
 
     let allPokemon = [];
+    let pokemonDataCache = new Map();
 
     async function fetchAllPokemon() {
       const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=1025');
@@ -131,20 +132,40 @@
         url: p.url,
         id: index + 1
       }));
-      renderPokemon(allPokemon);
+      await preloadFirstBatch();
+      renderPokemon(allPokemon.slice(0, 60));
     }
 
-    async function renderPokemon(pokemonList) {
+    // Carga inicial limitada (mejor rendimiento)
+    async function preloadFirstBatch() {
+      const promises = allPokemon.slice(0, 60).map(p => fetchPokemonData(p));
+      await Promise.all(promises);
+    }
+
+    async function fetchPokemonData(pokemon) {
+      if (pokemonDataCache.has(pokemon.id)) return pokemonDataCache.get(pokemon.id);
+      const res = await fetch(pokemon.url);
+      const data = await res.json();
+      const pokemonData = {
+        id: pokemon.id,
+        name: pokemon.name,
+        image: data.sprites.other['official-artwork'].front_default,
+        types: data.types.map(t => t.type.name)
+      };
+      pokemonDataCache.set(pokemon.id, pokemonData);
+      return pokemonData;
+    }
+
+    async function renderPokemon(list) {
       container.innerHTML = '';
-      for (const pokemon of pokemonList) {
-        const res = await fetch(pokemon.url);
-        const data = await res.json();
-        const types = data.types.map(t => `<span class="type">${t.type.name}</span>`).join('');
+      for (const pokemon of list) {
+        const data = await fetchPokemonData(pokemon);
+        const types = data.types.map(t => `<span class="type">${t}</span>`).join('');
         const card = document.createElement('div');
         card.classList.add('pokemon-card');
         card.innerHTML = `
-          <img src="${data.sprites.other['official-artwork'].front_default}" alt="${pokemon.name}">
-          <h3>#${pokemon.id.toString().padStart(4, '0')} ${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h3>
+          <img src="${data.image}" alt="${data.name}">
+          <h3>#${String(data.id).padStart(4, '0')} ${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</h3>
           <div class="types">${types}</div>
         `;
         container.appendChild(card);
@@ -152,22 +173,22 @@
     }
 
     searchInput.addEventListener('input', () => {
-      const value = searchInput.value.toLowerCase();
+      const value = searchInput.value.toLowerCase().trim();
       const filtered = allPokemon.filter(p => p.name.includes(value) || p.id.toString() === value);
-      renderPokemon(filtered.slice(0, 50)); // limit to 50 for performance
+      renderPokemon(filtered.slice(0, 50)); // límite
     });
 
     generationSelect.addEventListener('change', async () => {
       const gen = generationSelect.value;
       if (gen === 'all') {
-        renderPokemon(allPokemon.slice(0, 100));
-      } else {
-        const genResponse = await fetch(`https://pokeapi.co/api/v2/generation/${gen}`);
-        const genData = await genResponse.json();
-        const pokemonNames = genData.pokemon_species.map(p => p.name);
-        const filtered = allPokemon.filter(p => pokemonNames.includes(p.name));
-        renderPokemon(filtered);
+        renderPokemon(allPokemon.slice(0, 60));
+        return;
       }
+      const genResponse = await fetch(`https://pokeapi.co/api/v2/generation/${gen}`);
+      const genData = await genResponse.json();
+      const genNames = genData.pokemon_species.map(p => p.name);
+      const filtered = allPokemon.filter(p => genNames.includes(p.name));
+      renderPokemon(filtered);
     });
 
     fetchAllPokemon();
